@@ -80,7 +80,7 @@ namespace DEML20241103.Controllers
             ViewBag.Accion = accion;
             return View(accion, proyecto);
         }
-        public ActionResult EliminarDetalles([Bind("Id,Correlativo,Fecha,DetProyectos")] Proyecto proyecto,
+        public ActionResult EliminarDetalles([Bind("Id,Nombre,Descripcion,FechaInicial,DetProyectos")] Proyecto proyecto,
             int index, string accion)
         {
             var det = proyecto.DetProyectos[index];

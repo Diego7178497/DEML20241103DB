@@ -15,6 +15,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Orden)
             </th>
+         
             <th>
                 @if (ViewBag.Accion == "Create" || ViewBag.Accion == "Edit")
                 {
@@ -61,7 +62,7 @@
                     <tr style="display:none">
                         <td>
                             <input type="hidden" value="@item.Id" name="DetProyectos[@index].Id">
-                            <input type="hidden" value="@item.ProyectoId" name="DetProyecto[@index].ProyectoId">
+                            <input type="hidden" value="@item.ProyectoId" name="DetProyectos[@index].ProyectoId">
                             <input type="hidden" name="DetProyectos[@index].Tarea" value="@item.Tarea">
                             <input type="hidden" name="DetProyectos[@index].Orden" value="@item.Orden">
                         </td>
