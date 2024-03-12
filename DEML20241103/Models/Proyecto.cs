@@ -11,7 +11,6 @@ namespace DEML20241103.Models
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -19,7 +18,6 @@ namespace DEML20241103.Models
 
         public string Descripcion { get; set; }
 
-        [DataType(DataType.Date)]
         public DateTime FechaInicial { get; set; }
 
         // Relación uno a muchos con DetProyecto

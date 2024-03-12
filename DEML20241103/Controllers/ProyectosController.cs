@@ -41,7 +41,7 @@ namespace DEML20241103.Controllers
             {
                 return NotFound();
             }
-
+            ViewBag.Accion = "Details";
             return View(proyecto);
         }
 
@@ -112,6 +112,7 @@ namespace DEML20241103.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Accion = "Edit";
             return View(proyecto);
         }
 
@@ -127,14 +128,17 @@ namespace DEML20241103.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
                 try
                 {
                     var proyectoUpdate = await _context.Proyectos
                        .Include(s => s.DetProyectos)
                        .FirstAsync(s => s.Id == proyecto.Id);
-                    var detNew = proyecto.DetProyectos.Where(s => s.Id == 0);
+
+                 proyectoUpdate.Nombre = proyecto.Nombre;
+                 proyectoUpdate.Descripcion = proyecto.Descripcion;
+                proyectoUpdate.FechaInicial = proyecto.FechaInicial;
+
+                var detNew = proyecto.DetProyectos.Where(s => s.Id == 0);
                     foreach (var d in detNew)
                     {
                         proyectoUpdate.DetProyectos.Add(d);
@@ -146,16 +150,19 @@ namespace DEML20241103.Controllers
                         det.Tarea = d.Tarea;
                         det.Orden = d.Orden;
                     }
-                    var delDet = proyecto.DetProyectos.Where(s => s.Id < 0);
+                    //
+                    var delDet = proyecto.DetProyectos.Where(s => s.Id < 0).ToList();
+                if (delDet != null && delDet.Count > 0)
                     foreach (var d in delDet)
                     {
                         d.Id = d.Id * -1;
                         var det = proyectoUpdate.DetProyectos.FirstOrDefault(s => s.Id == d.Id);
-                        proyectoUpdate.DetProyectos.Remove(det);
+
+                      _context.Remove(det);
+                        //proyectoUpdate.DetProyectos.Remove(det);
                     }
                     _context.Update(proyectoUpdate);
-                    await _context.SaveChangesAsync();
-                
+                    await _context.SaveChangesAsync();            
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -169,8 +176,6 @@ namespace DEML20241103.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            }
-            return View(proyecto);
         }
 
         // GET: Proyectos/Delete/5
@@ -187,7 +192,7 @@ namespace DEML20241103.Controllers
             {
                 return NotFound();
             }
-
+            ViewBag.Accion = "Delete";
             return View(proyecto);
         }
 

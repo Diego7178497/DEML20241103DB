@@ -6,7 +6,6 @@ namespace DEML20241103.Models
     public class DetProyecto
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
