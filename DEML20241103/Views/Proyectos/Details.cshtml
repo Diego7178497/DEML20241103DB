@@ -4,7 +4,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Detalles</h1>
 
 <div>
     <h4>Proyecto</h4>
@@ -32,6 +32,6 @@
     <div class="row row-cols-md-12">
         @await Html.PartialAsync("_DetProyecto", Model.DetProyectos)
     </div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |
+    <a class="btn btn-danger" asp-action="Index">Regresar</a>
 </div>
