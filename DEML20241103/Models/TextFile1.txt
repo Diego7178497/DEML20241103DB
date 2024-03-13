@@ -1,0 +1,23 @@
+﻿ [HttpPost]
+        public ActionResult AgregarDetalles([Bind("Id,Nombre,Descripcion,FechaInicial,DetProyectos")] Proyecto proyecto, string accion)
+        {
+            proyecto.DetProyectos.Add(new DetProyecto { Orden = 1 });
+            ViewBag.Accion = accion;
+            return View(accion, proyecto);
+        }
+        public ActionResult EliminarDetalles([Bind("Id,Nombre,Descripcion,FechaInicial,DetProyectos")] Proyecto proyecto,
+            int index, string accion)
+        {
+            var det = proyecto.DetProyectos[index];
+            if (accion == "Edit" && det.Id > 0)
+            {
+                det.Id = det.Id * -1;
+            }
+            else
+            {
+                proyecto.DetProyectos.RemoveAt(index);
+            }
+
+            ViewBag.Accion = accion;
+            return View(accion, proyecto);
+        }

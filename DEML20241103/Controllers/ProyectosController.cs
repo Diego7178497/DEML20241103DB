@@ -121,48 +121,58 @@ namespace DEML20241103.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Descripcion,FechaInicial,DetProyecto")] Proyecto proyecto)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nombre,Descripcion,FechaInicial,DetProyectos")] Proyecto proyecto)
         {
             if (id != proyecto.Id)
             {
                 return NotFound();
             }
 
+            
                 try
                 {
                     var proyectoUpdate = await _context.Proyectos
-                       .Include(s => s.DetProyectos)
-                       .FirstAsync(s => s.Id == proyecto.Id);
+                        .Include(s => s.DetProyectos)
+                        .FirstOrDefaultAsync(s => s.Id == proyecto.Id);
 
-                 proyectoUpdate.Nombre = proyecto.Nombre;
-                 proyectoUpdate.Descripcion = proyecto.Descripcion;
-                proyectoUpdate.FechaInicial = proyecto.FechaInicial;
+                    proyectoUpdate.Nombre = proyecto.Nombre;
+                    proyectoUpdate.Descripcion = proyecto.Descripcion;
+                    proyectoUpdate.FechaInicial = proyecto.FechaInicial;
 
-                var detNew = proyecto.DetProyectos.Where(s => s.Id == 0);
+                    var detNew = proyecto.DetProyectos.Where(s => s.Id == 0);
                     foreach (var d in detNew)
                     {
                         proyectoUpdate.DetProyectos.Add(d);
                     }
+
                     var detUpdate = proyecto.DetProyectos.Where(s => s.Id > 0);
                     foreach (var d in detUpdate)
                     {
                         var det = proyectoUpdate.DetProyectos.FirstOrDefault(s => s.Id == d.Id);
-                        det.Tarea = d.Tarea;
-                        det.Orden = d.Orden;
+                        if (det != null)
+                        {
+                            det.Tarea = d.Tarea;
+                            det.Orden = d.Orden;
+                        }
                     }
-                    //
-                    var delDet = proyecto.DetProyectos.Where(s => s.Id < 0).ToList();
-                if (delDet != null && delDet.Count > 0)
-                    foreach (var d in delDet)
-                    {
-                        d.Id = d.Id * -1;
-                        var det = proyectoUpdate.DetProyectos.FirstOrDefault(s => s.Id == d.Id);
 
-                      _context.Remove(det);
-                        //proyectoUpdate.DetProyectos.Remove(det);
+                    var delDet = proyecto.DetProyectos.Where(s => s.Id < 0).ToList();
+                    if (delDet != null && delDet.Count > 0)
+                    {
+                        foreach (var d in delDet)
+                        {
+                            var det = await _context.DetProyectos.FindAsync(d.Id);
+                            if (det != null)
+                            {
+                                _context.DetProyectos.Remove(det);
+                            }
+                        }
                     }
+
                     _context.Update(proyectoUpdate);
-                    await _context.SaveChangesAsync();            
+                    await _context.SaveChangesAsync();
+
+                   
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -175,8 +185,10 @@ namespace DEML20241103.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Proyectos/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -206,6 +218,7 @@ namespace DEML20241103.Controllers
                 return Problem("Entity set 'DEML20241103Context.Proyectos'  is null.");
             }
             var proyecto = await _context.Proyectos.FindAsync(id);
+             
             if (proyecto != null)
             {
                 _context.Proyectos.Remove(proyecto);
